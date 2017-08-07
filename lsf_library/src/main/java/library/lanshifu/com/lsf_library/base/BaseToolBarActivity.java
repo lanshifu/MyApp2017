@@ -20,7 +20,7 @@ import library.lanshifu.com.lsf_library.utils.ViewIdGenerator;
  */
 
 public  abstract class BaseToolBarActivity extends BaseActivity {
-
+//一致
     private Menu mTBMenu;
     private TextView mToolBarTitle;
     private Toolbar mToolbar;

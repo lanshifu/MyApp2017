@@ -2,7 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lanshifu.myapp2017">
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.AccessibilityService" />
+
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,6 +23,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ZhiFuBaoMainActivity" />
+
+        <!-- <service android:name=".service.MyAccessServices"/> -->
+        <service android:name=".window.WindowService" />
+        <service
+            android:name=".service.MyAccessServices"
+            android:label="@string/accessibility_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+
+                <mate-data
+                    android:name="android.accessibilityservice"
+                    android:resource="@xml/accessibility" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".twolist.TwoListActivity"></activity>
     </application>
 
 </manifest>

@@ -1,5 +1,10 @@
 package com.lanshifu.myapp2017;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -7,12 +12,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lanshifu.myapp2017.twolist.TwoListActivity;
 import com.lanshifu.myapp2017.view.popumenu.PoPItem;
 import com.lanshifu.myapp2017.view.popumenu.PopMenu;
+import com.lanshifu.myapp2017.window.WindowService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import library.lanshifu.com.lsf_library.base.BaseToolBarActivity;
 
 public class MainActivity extends BaseToolBarActivity {
@@ -28,34 +37,20 @@ public class MainActivity extends BaseToolBarActivity {
     @Override
     protected void onViewCreate() {
 
-        findViewById(R.id.btn_menu).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mPopMenu == null) {
-                    initMenu();
-                }
-                if (!mPopMenu.isShowing()) {
-                    mPopMenu.show();
-                }
+        String res = doSomeThing();
+        showShortToast(res);
+    }
 
+    private String doSomeThing() {
 
-            }
-        });
+        return "doSomeThing";
 
-
-        findViewById(R.id.btn_menu2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, "onClick: menu2");
-
-            }
-        });
     }
 
 
     private void initMenu() {
         mPopMenu = new PopMenu.Builder(MainActivity.this)
-                .addMenuItem(new PoPItem(MainActivity.this, "菜单1", R.mipmap.tabbar_compose_idea))
+                .addMenuItem(new PoPItem(MainActivity.this, "双列表", R.mipmap.tabbar_compose_idea))
                 .addMenuItem(new PoPItem(MainActivity.this, "菜单2", R.mipmap.tabbar_compose_photo))
                 .addMenuItem(new PoPItem(MainActivity.this, "菜单3", R.mipmap.tabbar_compose_headlines))
                 .addMenuItem(new PoPItem(MainActivity.this, "菜单4", R.mipmap.tabbar_compose_lbs))
@@ -64,7 +59,11 @@ public class MainActivity extends BaseToolBarActivity {
                 .setOnPopMenuItemListener(new PopMenu.PopMenuItemListener() {
                     @Override
                     public void onItemClick(PopMenu popMenu, int position) {
-                        Toast.makeText(MainActivity.this, "点击了" + position, Toast.LENGTH_SHORT).show();
+                        switch (position) {
+                            case 0:
+                                startActivity(new Intent(MainActivity.this, TwoListActivity.class));
+                                break;
+                        }
                     }
                 })
                 .build();
@@ -78,6 +77,55 @@ public class MainActivity extends BaseToolBarActivity {
             list.add("数据" + i);
         }
         return list;
+    }
+
+    @OnClick({R.id.btn_menu, R.id.btn_menu2, R.id.btn_seeClass})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_menu:
+
+                if (mPopMenu == null) {
+                    initMenu();
+                }
+                if (!mPopMenu.isShowing()) {
+                    mPopMenu.show();
+                }
+
+                break;
+            case R.id.btn_menu2:
+                break;
+            case R.id.btn_seeClass:
+                requestAlertWindowPermission();
+                break;
+        }
+    }
+
+
+    private Intent intent;
+    private static final int REQUEST_CODE = 1;
+    private  void requestAlertWindowPermission() {
+        //修改
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+        intent.setData(Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Settings.canDrawOverlays(this)) {
+                    Log.i("111", "onActivityResult success");
+                    String settings = Settings.ACTION_ACCESSIBILITY_SETTINGS;
+                    startActivity(new Intent(settings));
+
+                    //联系人 一段时间
+//                    intent = new Intent(this,WindowService.class);
+//                    startService(intent);
+                }
+            }
+        }
     }
 
 
